@@ -317,6 +317,9 @@ abstract class JavaVisitorCompatibilityKit {
     inner class MaybeUsesImportTck : MaybeUsesImportTest
 
     @Nested
+    inner class MethodCanBeStaticTck : MethodCanBeStaticTest
+
+    @Nested
     inner class MethodNameCasingTck : MethodNameCasingTest
 
     @Nested
