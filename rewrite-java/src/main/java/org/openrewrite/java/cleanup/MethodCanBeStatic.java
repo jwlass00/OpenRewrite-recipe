@@ -90,6 +90,7 @@ public class MethodCanBeStatic extends Recipe {
         public static final String METHOD_INVOCATION_NAMES = "Method invocation names";
         public static final String INSTANCE_METHOD_NAMES = "Instance method names";
         public static final String INSTANCE_FIELD_NAMES = "Instance field names";
+        public static final String IDENTIFIER_NAMES = "Identifier names";
         public static final String CLASS_NAMES = "Class names";
 
         /**
@@ -113,6 +114,9 @@ public class MethodCanBeStatic extends Recipe {
             J.MethodDeclaration parentMethod = cursor.firstEnclosing(J.MethodDeclaration.class);
             if (parentMethod == null) {
                 if (hasFieldTypeAndIsNotStatic(i)) {  // instance field
+                    if (hasName(IDENTIFIER_NAMES, i.getSimpleName())) {
+                        referencesInstanceData.set(true);
+                    }
                     putName(INSTANCE_FIELD_NAMES, i.getSimpleName());
                 } else if (isInnerClassDeclaration(cursor)) {
                     if (hasName(CLASS_NAMES, i.getSimpleName()) && innerClassIsReferenced(i.getSimpleName())) {
@@ -136,9 +140,13 @@ public class MethodCanBeStatic extends Recipe {
                 }
                 putName(CLASS_NAMES, i.getSimpleName());
             } else if (isInstanceField(i)) {
-                putName(INSTANCE_METHOD_NAMES, parentMethod.getSimpleName());
                 if (isReferencedDirectlyOrIndirectly(parentMethod.getSimpleName())) {
                     referencesInstanceData.set(true);
+                }
+                putName(INSTANCE_METHOD_NAMES, parentMethod.getSimpleName());
+            } else {
+                if (isCurrentMethodOrIsCalledByCurrentMethod(parentMethod)) {
+                    putName(IDENTIFIER_NAMES, i.getSimpleName());
                 }
             }
 

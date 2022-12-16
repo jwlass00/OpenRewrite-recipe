@@ -12,6 +12,54 @@ interface MethodCanBeStaticTest : RewriteTest {
     }
 
     @Test
+    fun finalMethodInstanceDataReversedNotMadeStatic() = rewriteRun(
+            Assertions.java("""
+            class Test {
+
+                public final void test() {
+                    i = 1;
+                }
+                
+                private int i;
+
+            }
+        """)
+    )
+
+    @Test
+    fun finalMethodInstanceDataReversedOneMadeStatic() = rewriteRun(
+            Assertions.java("""
+            class Test {
+
+                public final void test() {
+                    i = 1;
+                }
+                
+                public final void test2() {
+                    int j = 1;
+                }
+                
+                private int i;
+
+            }
+        """, """
+            class Test {
+
+                public final void test() {
+                    i = 1;
+                }
+                
+                public static void test2() {
+                    int j = 1;
+                }
+                
+                private int i;
+
+            }
+        """)
+    )
+
+    @Test
     fun finalMethodNoInstanceDataMadeStatic() = rewriteRun(
             Assertions.java("""
             class Test {
@@ -837,6 +885,5 @@ interface MethodCanBeStaticTest : RewriteTest {
             }
         """)
     )
-
 
 }
